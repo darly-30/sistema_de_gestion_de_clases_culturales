@@ -8,3 +8,4 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     List<Enrollment> findByStudentName(String studentName);
     List<Enrollment> findByCulturalClassId(Long classId);
 }
+//hola//

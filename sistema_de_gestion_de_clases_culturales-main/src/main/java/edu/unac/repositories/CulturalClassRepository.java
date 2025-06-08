@@ -14,3 +14,4 @@ public interface CulturalClassRepository extends JpaRepository<CulturalClassRepo
     boolean existsByName(String name);
 }
 
+//hola//
