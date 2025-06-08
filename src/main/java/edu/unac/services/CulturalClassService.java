@@ -60,7 +60,6 @@ public class CulturalClassService {
 
         CulturalClass updated = current.toBuilder()
                 .name(dto.name())
-                .category(dto.category())
                 .maxCapacity(dto.maxCapacity())
                 .startDateTime(dto.startDateTime())
                 .endDateTime(dto.endDateTime())
