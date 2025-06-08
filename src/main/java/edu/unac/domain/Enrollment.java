@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 public class Enrollment {
-    //hola//
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
