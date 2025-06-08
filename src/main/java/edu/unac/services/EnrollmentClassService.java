@@ -1,9 +1,7 @@
-/*package edu.unac.services;
-
-
+package edu.unac.services;
 //hola//
 import edu.unac.domain.CulturalClass;
-import edu.unac.domain.enrollment;
+import edu.unac.domain.Enrollment;
 import edu.unac.repositories.CulturalClassRepository;
 import edu.unac.repositories.EnrollmentRepository;
 import org.springframework.stereotype.Service;
@@ -11,12 +9,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class EnrollmentService {
+public class EnrollmentClassService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final CulturalClassRepository classRepository;
 
-    public EnrollmentService(EnrollmentRepository enrollmentRepository, CulturalClassRepository classRepository) {
+    public EnrollmentClassService(EnrollmentRepository enrollmentRepository, CulturalClassRepository classRepository) {
         this.enrollmentRepository = enrollmentRepository;
         this.classRepository = classRepository;
     }
@@ -59,5 +57,3 @@ public class EnrollmentService {
         return enrollmentRepository.findByCulturalClassId(classId);
     }
 }
-*/
-
