@@ -25,9 +25,9 @@ public class EnrollmentClassService {
         if (!cls.isAvailable() || cls.getStartDateTime() <= System.currentTimeMillis()) {
             throw new IllegalStateException("Class is not available or has already started");
         }
-
-        if (cls.getEnrollments().size() >= cls.getMaxCapacity()) {
-            throw new IllegalStateException("Class is full");
+        int enrolledCount = enrollmentRepository.countByCulturalClassId(cls.getId());
+        if (enrolledCount >= cls.getMaxCapacity()) {
+        throw new IllegalStateException("Class is full");
         }
 
         List<Enrollment> studentEnrollments = enrollmentRepository.findByStudentName(studentName);
