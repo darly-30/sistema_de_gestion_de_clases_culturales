@@ -13,6 +13,6 @@ public interface    EnrollmentRepository extends JpaRepository<Enrollment, Long>
     List<Enrollment> findByCulturalClassId(Long classId);
     List<CulturalClass> findByName(String name);
     int countByCulturalClassId(Long culturalClassId);
-
+    
 }
 //hola//
