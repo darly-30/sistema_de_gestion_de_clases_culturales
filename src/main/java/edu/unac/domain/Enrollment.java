@@ -2,14 +2,20 @@ package edu.unac.domain;
 
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class Enrollment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private Long classId;
     private String studentName;
     private Long enrollmentDateTime; // epoch millis
 
@@ -17,35 +23,6 @@ public class Enrollment {
     @JoinColumn(name = "cultural_class_id")
     private CulturalClass culturalClass;
 
-    public Long getId() {
-        return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public String getStudentName() {
-        return studentName;
-    }
-
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
-    }
-
-    public Long getEnrollmentDateTime() {
-        return enrollmentDateTime;
-    }
-
-    public void setEnrollmentDateTime(Long enrollmentDateTime) {
-        this.enrollmentDateTime = enrollmentDateTime;
-    }
-
-    public CulturalClass getCulturalClass() {
-        return culturalClass;
-    }
-
-    public void setCulturalClass(CulturalClass culturalClass) {
-        this.culturalClass = culturalClass;
-    }
-}

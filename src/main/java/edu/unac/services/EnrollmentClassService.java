@@ -19,31 +19,50 @@ public class EnrollmentClassService {
         this.classRepository = classRepository;
     }
 
-    public Enrollment enroll(String studentName, Long classId, Long enrollmentDateTime) {
-        CulturalClass cls = classRepository.findById(classId).orElseThrow();
+    public Enrollment create(String studentName, Long classId, Long enrollmentDateTime) {
 
-        if (!cls.isAvailable() || cls.getStartDateTime() <= System.currentTimeMillis()) {
-            throw new IllegalStateException("Class is not available or has already started");
-        }
+        try {
+            System.out.println("Holaaaa EnrollmentService");
+            CulturalClass cls = classRepository.findById(classId).orElseThrow();
+            System.out.println("Despues Linea 26");
+            System.out.println("cls.getStartDateTime() = " + cls.getStartDateTime());
+            System.out.println("System.currentTimeMillis() = " + System.currentTimeMillis());
+            System.out.println("cls.isAvailable() = " + cls.isAvailable());
 
-        int enrolledCount = enrollmentRepository.countByCulturalClassId(cls.getId());
-        if (enrolledCount >= cls.getMaxCapacity()) {
-        throw new IllegalStateException("Class is full");
-        }
+          /*  if (!cls.isAvailable() || (cls.getStartDateTime() * 1000) <= System.currentTimeMillis()) {
+                throw new IllegalStateException("Class is not available or has already started");
+            }*/
 
-        List<Enrollment> studentEnrollments = enrollmentRepository.findByStudentName(studentName);
-        for (Enrollment e : studentEnrollments) {
-            CulturalClass other = e.getCulturalClass();
-            if (cls.getStartDateTime() < other.getEndDateTime() && other.getStartDateTime() < cls.getEndDateTime()) {
-                throw new IllegalStateException("Time conflict with another class");
+            System.out.println("Paso de linea 31 ");
+
+            int enrolledCount = enrollmentRepository.countByCulturalClassId(cls.getId());
+            if (enrolledCount >= cls.getMaxCapacity()) {
+                throw new IllegalStateException("Class is full");
             }
-        }
+            System.out.println("Paso de linea 36 ");
 
-        Enrollment enrollment = new Enrollment();
-        enrollment.setStudentName(studentName);
-        enrollment.setEnrollmentDateTime(enrollmentDateTime);
-        enrollment.setCulturalClass(cls);
-        return enrollmentRepository.save(enrollment);
+            List<Enrollment> studentEnrollments = enrollmentRepository.findByStudentName(studentName);
+            for (Enrollment e : studentEnrollments) {
+                CulturalClass other = e.getCulturalClass();
+                if (cls.getStartDateTime() < other.getEndDateTime() && other.getStartDateTime() < cls.getEndDateTime()) {
+                    throw new IllegalStateException("Time conflict with another class");
+                }
+            }
+            System.out.println("Paso de linea 45 ");
+
+            System.out.println("Paso de largoooooooooooo");
+            Enrollment enrollment = new Enrollment();
+            enrollment.setStudentName(studentName);
+            enrollment.setEnrollmentDateTime(enrollmentDateTime);
+            enrollment.setCulturalClass(cls);
+            System.out.println("Paso de linea 52 ");
+
+            return enrollmentRepository.save(enrollment);
+        } catch (Exception e) {
+
+            System.out.println(e+"EROOOOOOOOOOOOO");
+            throw e;
+        }
     }
 
     public void cancel(Long enrollmentId) {
@@ -54,6 +73,9 @@ public class EnrollmentClassService {
         enrollmentRepository.delete(enrollment);
     }
 
+    public List<Enrollment> findAll() {
+        return enrollmentRepository.findAll();
+    }
     public List<Enrollment> getByClassId(Long classId) {
         return enrollmentRepository.findByCulturalClassId(classId);
     }

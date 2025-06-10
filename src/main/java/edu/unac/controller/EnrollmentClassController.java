@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/enrollments")
+@CrossOrigin(origins = "*")
 public class EnrollmentClassController {
 
     private final EnrollmentClassService enrollmentService;
@@ -26,7 +27,9 @@ public class EnrollmentClassController {
     @ResponseStatus(HttpStatus.CREATED)
     public Enrollment create(@RequestBody CreateEnrollmentDto dto) {
         try {
-            return enrollmentService.enroll(dto.studentName(), dto.classId(), dto.enrollmentDateTime());
+            long f=dto.classId();
+            System.out.println("Entro "+ f);
+            return enrollmentService.create(dto.studentName(), dto.classId(), dto.enrollmentDateTime());
         } catch (IllegalStateException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -41,9 +44,14 @@ public class EnrollmentClassController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
+    @GetMapping
+    public List<Enrollment> findAll() {
+        System.out.println("Entro");
+        return enrollmentService.findAll();
+    }
     @GetMapping("/class/{classId}")
     public List<Enrollment> getByClassId(@PathVariable Long classId) {
         return enrollmentService.getByClassId(classId);
     }
+
 }
