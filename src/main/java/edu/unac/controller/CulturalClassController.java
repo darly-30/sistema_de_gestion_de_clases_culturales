@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cultural-classes")
+@CrossOrigin(origins = "*")
 public class CulturalClassController {
     private final CulturalClassService culturalClassService;
 
