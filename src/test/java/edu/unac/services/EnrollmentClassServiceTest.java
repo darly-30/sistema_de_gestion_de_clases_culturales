@@ -43,18 +43,57 @@ class EnrollmentClassServiceTest {
         assertThrows(IllegalStateException.class, () -> service.create("Pedro", 1L, 1L));
     }
     @Test
-    void studentHaveProblemWithAnOtherClass(){
-        CulturalClass cls = CulturalClass.builder().id(1L).name("Baile").category(Category.DANCE).maxCapacity(1).startDateTime(1L).endDateTime(2L).available(true).build();
-        CulturalClass cls2 = CulturalClass.builder().id(2L).name("Canto").category(Category.SINGING).maxCapacity(1).startDateTime(1L).endDateTime(2L).available(true).build();
-        Enrollment enrollment = new Enrollment();
-        enrollment.setCulturalClass(cls2);
-        when(classRepository.findById(1L)).thenReturn(Optional.of(cls));
-        when(enrollmentRepository.countByCulturalClassId(2L)).thenReturn(0);
-        when(enrollmentRepository.findByStudentName("Pedro")).thenReturn(List.of(enrollment));
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> service.create("Pedro", 1L, 1L));
-        assertEquals("Time conflict with another class", exception.getMessage());
+    void studentHasConflictingClassTimes() {
+        CulturalClass newClass = CulturalClass.builder()
+                .id(1L).name("Teatro")
+                .startDateTime(1000L)
+                .endDateTime(2000L)
+                .available(true)
+                .maxCapacity(10)
+                .build();
 
+        CulturalClass existingClass = CulturalClass.builder()
+                .id(2L).name("Pintura")
+                .startDateTime(1500L) // Se cruza con newClass
+                .endDateTime(2500L)
+                .available(true)
+                .maxCapacity(10)
+                .build();
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setCulturalClass(existingClass);
+
+        when(classRepository.findById(1L)).thenReturn(Optional.of(newClass));
+        when(enrollmentRepository.countByCulturalClassId(1L)).thenReturn(0);
+        when(enrollmentRepository.findByStudentName("Pedro")).thenReturn(List.of(enrollment));
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> service.create("Pedro", 1L, 12345L));
+        assertEquals("Time conflict with another class", exception.getMessage());
     }
+    @Test
+    void studentHasNoConflictWithOtherClasses() {
+        CulturalClass newClass = CulturalClass.builder().id(1L).name("Teatro").startDateTime(3000L).endDateTime(4000L).available(true).maxCapacity(10).build();
+        CulturalClass existingClass = CulturalClass.builder().id(2L).name("Pintura")
+                .startDateTime(1000L) // No se cruza
+                .endDateTime(2000L)
+                .available(true)
+                .maxCapacity(10)
+                .build();
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setCulturalClass(existingClass);
+
+        when(classRepository.findById(1L)).thenReturn(Optional.of(newClass));
+        when(enrollmentRepository.countByCulturalClassId(1L)).thenReturn(0);
+        when(enrollmentRepository.findByStudentName("Pedro")).thenReturn(List.of(enrollment));
+
+        when(enrollmentRepository.save(any())).thenReturn(new Enrollment());
+
+        Enrollment result = service.create("Pedro", 1L, 12345L);
+        assertNotNull(result);
+        verify(enrollmentRepository).save(any());
+    }
+
     @Test
     void successfulEnrollment() {
         CulturalClass cls = CulturalClass.builder()
@@ -141,5 +180,41 @@ class EnrollmentClassServiceTest {
 
         assertEquals(1, result.size());
     }
+
+//Nuevas 
+    @Test
+    void enrollmentFailsIfClassIsNotAvailable() {
+        CulturalClass cls = CulturalClass.builder()
+                .id(1L)
+                .name("Pintura")
+                .available(false) // No disponible
+                .startDateTime(System.currentTimeMillis() / 1000 + 1000)
+                .endDateTime(System.currentTimeMillis() / 1000 + 2000)
+                .maxCapacity(5)
+                .build();
+
+        when(classRepository.findById(1L)).thenReturn(Optional.of(cls));
+
+        assertThrows(IllegalStateException.class, () -> service.create("Pedro", 1L, 1L));
+    }
+
+
+    @Test
+    void enrollmentFailsIfClassAlreadyStarted() {
+        CulturalClass cls = CulturalClass.builder()
+                .id(1L)
+                .name("Música")
+                .available(true)
+                .startDateTime(System.currentTimeMillis() / 1000 - 1000)
+                .endDateTime(System.currentTimeMillis() / 1000 + 1000)
+                .maxCapacity(5)
+                .build();
+
+        when(classRepository.findById(1L)).thenReturn(Optional.of(cls));
+
+        assertThrows(IllegalStateException.class, () -> service.create("Pedro", 1L, 1L));
+    }
+
+
 
 }
