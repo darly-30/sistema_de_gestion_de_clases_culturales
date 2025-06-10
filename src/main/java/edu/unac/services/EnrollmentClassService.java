@@ -1,5 +1,5 @@
 package edu.unac.services;
-//hola//
+
 import edu.unac.domain.CulturalClass;
 import edu.unac.domain.Enrollment;
 import edu.unac.repositories.CulturalClassRepository;
@@ -58,3 +58,4 @@ public class EnrollmentClassService {
         return enrollmentRepository.findByCulturalClassId(classId);
     }
 }
+
